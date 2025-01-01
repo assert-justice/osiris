@@ -6,6 +6,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_30aps"]
 
 [node name="Token" type="Area2D"]
+z_index = 1
 position = Vector2(0, 0.5)
 script = ExtResource("1_8wg8d")
 
@@ -16,3 +17,8 @@ texture_scale = 10.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_30aps")
+
+[node name="Line2D" type="Line2D" parent="."]
+z_index = -1
+points = PackedVector2Array(0, 0, 0, 0)
+default_color = Color(1.03481e-06, 0.720339, 1.54018e-06, 1)

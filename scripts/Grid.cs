@@ -22,6 +22,13 @@ public partial class Grid : Node2D
 		AddWall(9, 1, 14, 1);
 		AddWall(14, 1, 14, 7);
 		AddWall(14, 7, 12, 7);
+		AddWall(12, 7, 12, 8);
+		AddWall(11, 7, 11, 8);
+		AddWall(11, 8, 8, 8);
+		AddWall(8, 8, 8, 17);
+		AddWall(12, 8, 15, 8);
+		AddWall(15, 8, 15, 17);
+		AddWall(15, 17, 8, 17);
 		foreach ((var v0, var v1) in Walls)
 		{
 			var x0 = v0.X * CellWidth;
@@ -37,6 +44,21 @@ public partial class Grid : Node2D
 	}
 	void AddWall(int x0, int y0, int x1, int y1){
 		Walls.Add((new Vector2I(x0,y0), new Vector2I(x1,y1)));
+	}
+	static bool IsIntersecting(Vector2I a, Vector2I b, Vector2I c, Vector2I d)
+	{
+		// Shamelessly stolen from here: https://gamedev.stackexchange.com/questions/26004/how-to-detect-2d-line-on-line-collision
+		float denominator = ((b.X - a.X) * (d.Y - c.Y)) - ((b.Y - a.Y) * (d.X - c.X));
+		float numerator1 = ((a.Y - c.Y) * (d.X - c.X)) - ((a.X - c.X) * (d.Y - c.Y));
+		float numerator2 = ((a.Y - c.Y) * (b.X - a.X)) - ((a.X - c.X) * (b.Y - a.Y));
+
+		// Detect coincident lines (has a problem, read below)
+		if (denominator == 0) return numerator1 == 0 && numerator2 == 0;
+		
+		float r = numerator1 / denominator;
+		float s = numerator2 / denominator;
+
+		return (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -68,4 +90,6 @@ public partial class Grid : Node2D
 			}
 		}
 	}
+	public void GenPaths(Vector2I start, int range, int rangeInc){}
+	// public Vector2[] GetPath(Vector2I dest){}
 }
