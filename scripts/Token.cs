@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Linq;
 
 public partial class Token : Area2D
 {
@@ -12,17 +13,18 @@ public partial class Token : Area2D
 	public int Width = 1;
 	bool IsDragging = false;
 	Line2D line;
-	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		grid = GetParent<Grid>();
-		CellWidth = grid.CellWidth;
 		InputEvent += InputMethod;
+		line = GetChild<Line2D>(2);
+	}
+	public void SetGrid(Grid grid){
+		this.grid = grid;
+		CellWidth = grid.CellWidth;
 		var collider = GetChild<CollisionShape2D>(1);
 		var shape = new RectangleShape2D();
 		shape.Size = new Vector2(CellWidth,CellWidth);
 		collider.Shape = shape;
-		line = GetChild<Line2D>(2);
 	}
 	public override void _Draw()
 	{
@@ -30,7 +32,6 @@ public partial class Token : Area2D
 		DrawTextureRect(Texture, new Rect2(-width/2.0f,-width/2.0f,width,width), false);
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
 		if(IsDragging){
@@ -40,15 +41,19 @@ public partial class Token : Area2D
 			var x = (int)Position.X / CellWidth;
 			var y = (int)Position.Y / CellWidth;
 			IPosition = new(x,y);
-			var dx = DragStart.X*CellWidth+CellWidth/2 - Position.X;
-			var dy = DragStart.Y*CellWidth+CellWidth/2 - Position.Y;
-			var fx = IPosition.X*CellWidth+CellWidth/2 - Position.X;
-			var fy = IPosition.Y*CellWidth+CellWidth/2 - Position.Y;
-			Vector2[] xs = {
-				new Vector2(fx,fy),
-				new Vector2(dx, dy),
-			};
-			line.Points = xs;
+			var points = grid.GetPath(IPosition)
+				.Select(p => new Vector2(p.X * CellWidth + CellWidth/2 - Position.X, p.Y * CellWidth + CellWidth/2 - Position.Y))
+				.ToArray();
+			// GD.Print(points.Count());
+			// var dx = DragStart.X*CellWidth+CellWidth/2 - Position.X;
+			// var dy = DragStart.Y*CellWidth+CellWidth/2 - Position.Y;
+			// var fx = IPosition.X*CellWidth+CellWidth/2 - Position.X;
+			// var fy = IPosition.Y*CellWidth+CellWidth/2 - Position.Y;
+			// Vector2[] xs = {
+			// 	new Vector2(fx,fy),
+			// 	new Vector2(dx, dy),
+			// };
+			line.Points = points;
 		}
 		else{
 			if(line.Visible)line.Visible = false;
@@ -61,6 +66,7 @@ public partial class Token : Area2D
 				var x = (int)Position.X / CellWidth;
 				var y = (int)Position.Y / CellWidth;
 				DragStart = new(x,y);
+				grid.GenPaths(DragStart, 5);
 			}
 			if (!mousButt.Pressed && IsDragging){
 				IsDragging = false;

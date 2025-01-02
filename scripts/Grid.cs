@@ -14,9 +14,17 @@ public partial class Grid : Node2D
 	[Export] public bool ShowWalls = true;
 	List<(Vector2I, Vector2I)> Walls = new();
 	Dictionary<Vector2I, List<int>> WallCache = new();
+	Pool<Line2D> LinePool = new(()=>new Line2D());
+	Dictionary<Vector2I, GridNode> PathLookup = new();
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		foreach (var t in GetChild(0).GetChildren())
+		{
+			if (t is Token token){
+				token.SetGrid(this);
+			}
+		}
 		AddWall(9, 1, 9, 7);
 		AddWall(9, 7, 11, 7);
 		AddWall(9, 1, 14, 1);
@@ -90,6 +98,79 @@ public partial class Grid : Node2D
 			}
 		}
 	}
-	public void GenPaths(Vector2I start, int range, int rangeInc){}
-	// public Vector2[] GetPath(Vector2I dest){}
+	static GridNode PopLeast(ref Dictionary<Vector2I, GridNode> dict){
+		var least = new GridNode(new Vector2I(0,0), new Vector2I(0,0), Mathf.Inf);
+		if (dict.Count == 0){
+			GD.PrintErr("Tried to pop from empty dict!");
+			return least;
+		}
+		foreach (var val in dict.Values)
+		{
+			if (val.Cost < least.Cost){
+				least = val;
+			}
+		}
+		dict.Remove(least.Position);
+		return least;
+	}
+	static void PushLeast(ref Dictionary<Vector2I,GridNode> dict, GridNode node){
+		if(dict.ContainsKey(node.Position)){
+			var comp = dict[node.Position];
+			if (comp.Cost < node.Cost){return;}
+		}
+		dict[node.Position] = node;
+	}
+	public void GenPaths(Vector2I start, float range, float rangeInc = 0){
+		if(rangeInc == 0)rangeInc = range;
+		PathLookup.Clear();
+		Vector2I[] directions = {
+			new(1,0),
+			new(0,-1),
+			new(-1,0),
+			new(0,1),
+		};
+		Vector2I[] diagonals = {
+			new(1,-1),
+			new(-1,-1),
+			new(-1,1),
+			new(1,1),
+		};
+		Dictionary<Vector2I, GridNode> open = new()
+		{
+			{ start, new GridNode(start, start, 0) }
+		};
+		while (open.Count > 0){
+			var node = PopLeast(ref open);
+			if(node.Cost > range){break;}
+			PushLeast(ref PathLookup, node);
+			foreach (var dir in directions)
+			{
+				var pos = new Vector2I(dir.X + node.Position.X, dir.Y + node.Position.Y);
+				var cost = node.Cost + 1; // Todo: implement difficult terrain
+				var next = new GridNode(pos, node.Position, cost);
+				PushLeast(ref open, next);
+			}
+			foreach (var dir in diagonals)
+			{
+				var pos = new Vector2I(dir.X + node.Position.X, dir.Y + node.Position.Y);
+				var cost = node.Cost + 1.5f; // Todo: implement difficult terrain
+				var next = new GridNode(pos, node.Position, cost);
+				PushLeast(ref open, next);
+			}
+		}
+		// GD.Print(PathLookup.Count);
+	}
+	public Vector2I[] GetPath(Vector2I dest){
+		if(!PathLookup.ContainsKey(dest)){
+			return Array.Empty<Vector2I>();
+		}
+		var temp = new List<Vector2I>();
+		var node = PathLookup[dest];
+		while(true){
+			temp.Add(node.Position);
+			if (node.Cost == 0) break;
+			node = PathLookup[node.Parent];
+		}
+		return temp.ToArray();
+	}
 }
