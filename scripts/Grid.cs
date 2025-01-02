@@ -17,8 +17,25 @@ public partial class Grid : Node2D
 	Pool<Line2D> LinePool = new(()=>new Line2D());
 	Dictionary<Vector2I, GridNode> PathLookup = new();
 	// Called when the node enters the scene tree for the first time.
+	public Line2D GetLine(){
+		return LinePool.GetNew();
+	}
+	public void FreeLine(Line2D line){
+		LinePool.Free(line);
+	}
 	public override void _Ready()
 	{
+		LinePool.NewFn = ()=>{
+			var line = new Line2D();
+			GetChild(1).AddChild(line);
+			return line;
+		};
+		LinePool.InitFn = (Line2D l)=>{
+			l.DefaultColor = Colors.White;
+		};
+		LinePool.FreeFn = (Line2D l)=>{
+			l.Points = Array.Empty<Vector2>();
+		};
 		foreach (var t in GetChild(0).GetChildren())
 		{
 			if (t is Token token){

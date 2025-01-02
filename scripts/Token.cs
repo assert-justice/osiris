@@ -16,7 +16,6 @@ public partial class Token : Area2D
 	public override void _Ready()
 	{
 		InputEvent += InputMethod;
-		line = GetChild<Line2D>(2);
 	}
 	public void SetGrid(Grid grid){
 		this.grid = grid;
@@ -37,32 +36,20 @@ public partial class Token : Area2D
 		if(IsDragging){
 			var mPos = GetGlobalMousePosition();
 			Position = mPos;
-			if(!line.Visible)line.Visible = true;
 			var x = (int)Position.X / CellWidth;
 			var y = (int)Position.Y / CellWidth;
 			IPosition = new(x,y);
 			var points = grid.GetPath(IPosition)
-				.Select(p => new Vector2(p.X * CellWidth + CellWidth/2 - Position.X, p.Y * CellWidth + CellWidth/2 - Position.Y))
+				.Select(p => new Vector2(p.X * CellWidth + CellWidth/2, p.Y * CellWidth + CellWidth/2))
 				.ToArray();
-			// GD.Print(points.Count());
-			// var dx = DragStart.X*CellWidth+CellWidth/2 - Position.X;
-			// var dy = DragStart.Y*CellWidth+CellWidth/2 - Position.Y;
-			// var fx = IPosition.X*CellWidth+CellWidth/2 - Position.X;
-			// var fy = IPosition.Y*CellWidth+CellWidth/2 - Position.Y;
-			// Vector2[] xs = {
-			// 	new Vector2(fx,fy),
-			// 	new Vector2(dx, dy),
-			// };
-			line.Points = points;
-		}
-		else{
-			if(line.Visible)line.Visible = false;
+			if(points.Count() > 0) line.Points = points;
 		}
 	}
 	void InputMethod(Node viewport, InputEvent @event, long shapeIdx){
 		if(@event is InputEventMouseButton mousButt){
 			if (mousButt.Pressed && !IsDragging){
 				IsDragging = true;
+				line = grid.GetLine();
 				var x = (int)Position.X / CellWidth;
 				var y = (int)Position.Y / CellWidth;
 				DragStart = new(x,y);
@@ -70,10 +57,11 @@ public partial class Token : Area2D
 			}
 			if (!mousButt.Pressed && IsDragging){
 				IsDragging = false;
+				grid.FreeLine(line);
+				line = null;
 				// Snap to grid
 				var x = (int)Position.X / CellWidth;
 				var y = (int)Position.Y / CellWidth;
-				// IPosition = new(x,y);
 				x = x * CellWidth + CellWidth/2;
 				y = y * CellWidth + CellWidth/2;
 				Position = new Vector2(x,y);
