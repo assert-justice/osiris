@@ -47,6 +47,7 @@ public partial class Token : Area2D
 	}
 	void InputMethod(Node viewport, InputEvent @event, long shapeIdx){
 		if(@event is InputEventMouseButton mousButt){
+			if(mousButt.ButtonIndex != MouseButton.Left) return;
 			if (mousButt.Pressed && !IsDragging){
 				IsDragging = true;
 				line = grid.GetLine();

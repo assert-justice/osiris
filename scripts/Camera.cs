@@ -7,12 +7,10 @@ public partial class Camera : Camera2D
 	[Export] public float ZoomSpeed = 1;
 	[Export] public float MaxZoom = 10;
 	[Export] public float MinZoom = 0.1f;
-	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
 		float dt = (float)delta;
@@ -23,5 +21,8 @@ public partial class Camera : Camera2D
 		if (Input.IsActionJustPressed("scroll_down")){deltaZoom = -1;}
 		deltaZoom *= ZoomSpeed * dt;
 		Zoom += new Vector2(deltaZoom, deltaZoom);
+	}
+	public void Pan(Vector2 v){
+		Position += v * Zoom.Length();//TODO: do this properly
 	}
 }

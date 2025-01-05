@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public partial class Grid : Node2D
+public partial class Grid : Area2D
 {
 	[Export] public int Width = 25;
 	[Export] public int Height = 25;
@@ -17,6 +17,8 @@ public partial class Grid : Node2D
 	Dictionary<Vector2I, List<int>> WallCache = new();
 	Pool<Line2D> LinePool = new(()=>new Line2D());
 	Dictionary<Vector2I, GridNode> PathLookup = new();
+	Camera camera;
+	bool IsDragging = false;
 	// Called when the node enters the scene tree for the first time.
 	public Line2D GetLine(){
 		return LinePool.GetNew();
@@ -26,6 +28,13 @@ public partial class Grid : Node2D
 	}
 	public override void _Ready()
 	{
+		var collider = GetChild<CollisionShape2D>(2);
+		var shape = new RectangleShape2D();
+		shape.Size = new Vector2(CellWidth * Width,CellWidth * Height);
+		collider.Position = new Vector2(CellWidth * Width/2,CellWidth * Height/2);
+		collider.Shape = shape;
+		camera = GetChild<Camera>(3);
+		InputEvent += InputMethod;
 		LinePool.NewFn = ()=>{
 			var line = new Line2D();
 			GetChild(1).AddChild(line);
@@ -66,6 +75,36 @@ public partial class Grid : Node2D
 			occluder.Occluder = new();
 			occluder.Occluder.Polygon = vectors;
 			AddChild(occluder);
+		}
+	}
+	void InputMethod(Node viewport, InputEvent @event, long shapeIdx){
+		if(@event is InputEventMouseMotion mouseMotion){
+			if(IsDragging){
+				camera.Pan(-mouseMotion.Relative);
+			}
+		}
+		if(@event is InputEventMouseButton mousButt){
+			// GD.Print("yo");
+			if(mousButt.ButtonIndex != MouseButton.Right) return;
+			if (mousButt.Pressed && !IsDragging){
+				IsDragging = true;
+			// 	line = grid.GetLine();
+			// 	var x = (int)Position.X / CellWidth;
+			// 	var y = (int)Position.Y / CellWidth;
+			// 	DragStart = new(x,y);
+			// 	grid.GenPaths(DragStart, 5);
+			}
+			if (!mousButt.Pressed && IsDragging){
+				IsDragging = false;
+			// 	grid.FreeLine(line);
+			// 	line = null;
+			// 	// Snap to grid
+			// 	var x = (int)Position.X / CellWidth;
+			// 	var y = (int)Position.Y / CellWidth;
+			// 	x = x * CellWidth + CellWidth/2;
+			// 	y = y * CellWidth + CellWidth/2;
+			// 	Position = new Vector2(x,y);
+			}
 		}
 	}
 	void AddWall(int x0, int y0, int x1, int y1){

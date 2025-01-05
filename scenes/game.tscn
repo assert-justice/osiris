@@ -1,10 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://blt372838xe"]
+[gd_scene load_steps=7 format=3 uid="uid://blt372838xe"]
 
 [ext_resource type="Texture2D" uid="uid://d05lbgaho6uy0" path="res://textures/temple_21_44.jpg" id="1_1tss7"]
 [ext_resource type="Script" path="res://scripts/Grid.cs" id="2_1c0kf"]
 [ext_resource type="PackedScene" uid="uid://b0uu343mpkg7t" path="res://scenes/token.tscn" id="3_3aypw"]
 [ext_resource type="Texture2D" uid="uid://2c4kqpo0ajy" path="res://icon.svg" id="4_lylv7"]
 [ext_resource type="Script" path="res://scripts/Camera.cs" id="5_2e1j1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jxm6t"]
 
 [node name="Game" type="Node2D"]
 
@@ -13,7 +15,7 @@ visible = false
 position = Vector2(777, 2958)
 texture = ExtResource("1_1tss7")
 
-[node name="Grid" type="Node2D" parent="."]
+[node name="Grid" type="Area2D" parent="."]
 script = ExtResource("2_1c0kf")
 Width = 21
 Height = 44
@@ -31,10 +33,13 @@ metadata/_edit_lock_ = true
 
 [node name="Lines" type="Node" parent="Grid"]
 
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Grid"]
+shape = SubResource("RectangleShape2D_jxm6t")
+
+[node name="Camera2D" type="Camera2D" parent="Grid"]
+position = Vector2(959, 548)
+script = ExtResource("5_2e1j1")
+
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
 color = Color(0, 0, 0, 1)
 metadata/_edit_lock_ = true
-
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(959, 548)
-script = ExtResource("5_2e1j1")
