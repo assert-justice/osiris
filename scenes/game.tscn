@@ -29,6 +29,7 @@ metadata/_edit_lock_ = true
 [node name="Token" parent="Grid/Tokens" instance=ExtResource("3_3aypw")]
 position = Vector2(757, 326)
 Texture = ExtResource("4_lylv7")
+Speed = 15
 metadata/_edit_lock_ = true
 
 [node name="Lines" type="Node" parent="Grid"]

@@ -54,7 +54,7 @@ public partial class Token : Area2D
 				var x = (int)Position.X / CellWidth;
 				var y = (int)Position.Y / CellWidth;
 				DragStart = new(x,y);
-				grid.GenPaths(DragStart, 5);
+				grid.GenPaths(DragStart, Speed);
 			}
 			if (!mousButt.Pressed && IsDragging){
 				IsDragging = false;
