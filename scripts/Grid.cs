@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public partial class Grid : Node2D
 {
@@ -70,8 +71,13 @@ public partial class Grid : Node2D
 	void AddWall(int x0, int y0, int x1, int y1){
 		Walls.Add((new Vector2I(x0,y0), new Vector2I(x1,y1)));
 	}
-	static bool IsIntersecting(Vector2I a, Vector2I b, Vector2I c, Vector2I d)
+	static bool IsIntersecting(Vector2I wallStart, Vector2I wallEnd, Vector2I pathStart, Vector2I pathEnd)
 	{
+		Vector2 a = new(wallStart.X, wallStart.Y);
+		Vector2 b = new(wallEnd.X, wallEnd.Y);
+		Vector2 c = new(pathStart.X + 0.5f, pathStart.Y + 0.5f);
+		Vector2 d = new(pathEnd.X + 0.5f, pathEnd.Y + 0.5f);
+
 		// Shamelessly stolen from here: https://gamedev.stackexchange.com/questions/26004/how-to-detect-2d-line-on-line-collision
 		float denominator = ((b.X - a.X) * (d.Y - c.Y)) - ((b.Y - a.Y) * (d.X - c.X));
 		float numerator1 = ((a.Y - c.Y) * (d.X - c.X)) - ((a.X - c.X) * (d.Y - c.Y));
@@ -145,8 +151,6 @@ public partial class Grid : Node2D
 			new(0,-1),
 			new(-1,0),
 			new(0,1),
-		};
-		Vector2I[] diagonals = {
 			new(1,-1),
 			new(-1,-1),
 			new(-1,1),
@@ -163,19 +167,16 @@ public partial class Grid : Node2D
 			foreach (var dir in directions)
 			{
 				var pos = new Vector2I(dir.X + node.Position.X, dir.Y + node.Position.Y);
-				var cost = node.Cost + 1; // Todo: implement difficult terrain
+				var deltaCost = dir.X == 0 || dir.Y == 0 ? 1.0f : 1.5f;
+				var cost = node.Cost + deltaCost; // Todo: implement difficult terrain
 				var next = new GridNode(pos, node.Position, cost);
-				PushLeast(ref open, next);
-			}
-			foreach (var dir in diagonals)
-			{
-				var pos = new Vector2I(dir.X + node.Position.X, dir.Y + node.Position.Y);
-				var cost = node.Cost + 1.5f; // Todo: implement difficult terrain
-				var next = new GridNode(pos, node.Position, cost);
+				if(Walls.Any((w)=>{
+					var (a,b) = w;
+					return IsIntersecting(a, b, pos, node.Position);
+				})){continue;}
 				PushLeast(ref open, next);
 			}
 		}
-		// GD.Print(PathLookup.Count);
 	}
 	public Vector2I[] GetPath(Vector2I dest){
 		if(!PathLookup.ContainsKey(dest)){
