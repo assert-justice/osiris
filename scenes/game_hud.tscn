@@ -33,6 +33,7 @@ offset_top = -159.0
 grow_horizontal = 0
 grow_vertical = 0
 placeholder_text = "Placeholder Text"
+wrap_mode = 1
 
 [node name="Log" type="ScrollContainer" parent="Chat"]
 layout_mode = 1
