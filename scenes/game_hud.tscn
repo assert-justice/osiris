@@ -49,4 +49,4 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="Chat/Log/VBoxContainer"]
 layout_mode = 2
-text = "Log"
+text = "Log                                                 "
