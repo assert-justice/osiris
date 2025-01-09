@@ -10,19 +10,19 @@ public partial class Chat : Node
 		edit = GetChild<TextEdit>(0);
 		container = GetChild(1).GetChild<VBoxContainer>(0);
 		edit.TextChanged += ()=>{
-			if(edit.Text[edit.Text.Length-1] == '\n'){
+			if(edit.Text[^1] == '\n'){
 				Submit(edit.Text);
 				edit.Text = "";
 			}
 		};
 	}
 	void Submit(string text){
-        var ast = DiceParser.Parse(text);
-        text = ast.ToString();
+		var ast = DiceParser.Parse(text);
+		text = ast.ToString();
 		Label label = new()
 		{
 			Text = text,
-            AutowrapMode = TextServer.AutowrapMode.Word,
+			AutowrapMode = TextServer.AutowrapMode.Word,
 		};
 		container.AddChild(label);
 	}
