@@ -12,6 +12,7 @@ grow_vertical = 2
 script = ExtResource("1_l2bgc")
 
 [node name="Main" type="Control" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -46,10 +47,6 @@ text = "Join Game"
 layout_mode = 2
 text = "Host Game"
 
-[node name="Create" type="Button" parent="Main/VBoxContainer"]
-layout_mode = 2
-text = "Create Game"
-
 [node name="Options" type="Button" parent="Main/VBoxContainer"]
 layout_mode = 2
 text = "Options
@@ -58,3 +55,118 @@ text = "Options
 [node name="Quit" type="Button" parent="Main/VBoxContainer"]
 layout_mode = 2
 text = "Quit"
+
+[node name="GameBrowser" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameBrowser"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Create" type="Button" parent="GameBrowser/VBoxContainer"]
+layout_mode = 2
+text = "Create"
+
+[node name="Import" type="Button" parent="GameBrowser/VBoxContainer"]
+layout_mode = 2
+text = "Import
+"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="GameBrowser/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameBrowser/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="GameBrowser/VBoxContainer/ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "Empty"
+
+[node name="Back" type="Button" parent="GameBrowser/VBoxContainer"]
+layout_mode = 2
+text = "Back"
+
+[node name="NewProject" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="NewProject"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Create a Project"
+
+[node name="NameEdit" type="TextEdit" parent="NewProject"]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 39.0
+offset_right = 245.0
+offset_bottom = 110.0
+text = "Unnamed Project"
+
+[node name="PathEdit" type="Label" parent="NewProject"]
+layout_mode = 0
+offset_left = 331.0
+offset_top = 41.0
+offset_right = 575.0
+offset_bottom = 112.0
+text = "No Path"
+
+[node name="Button" type="Button" parent="NewProject"]
+layout_mode = 0
+offset_left = 343.0
+offset_top = 243.0
+offset_right = 414.0
+offset_bottom = 274.0
+text = "Confirm"
+
+[node name="Button2" type="Button" parent="NewProject"]
+layout_mode = 0
+offset_left = 181.0
+offset_top = 237.0
+offset_right = 241.0
+offset_bottom = 268.0
+text = "Cancel
+"
+
+[node name="Button3" type="Button" parent="NewProject"]
+layout_mode = 0
+offset_left = 344.0
+offset_top = 137.0
+offset_right = 412.0
+offset_bottom = 168.0
+text = "SetPath
+"
+
+[node name="ImportProjectDialogue" type="FileDialog" parent="."]
+title = "Import a Game"
+initial_position = 1
+size = Vector2i(492, 400)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.json;JSON files")
+
+[node name="CreateProjectDialogue" type="FileDialog" parent="."]
+auto_translate_mode = 1
+title = "Create a Game"
+initial_position = 1
+size = Vector2i(520, 400)
+ok_button_text = "Select Current Folder"
+file_mode = 2
+access = 2

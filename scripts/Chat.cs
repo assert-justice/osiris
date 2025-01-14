@@ -17,8 +17,10 @@ public partial class Chat : Node
 		};
 	}
 	void Submit(string text){
-		var ast = DiceParser.Parse(text);
-		text = ast.ToString();
+		if(text.StartsWith("/r ")){
+			var ast = DiceParser.Parse(text[3..]);
+			text = ast.ToString();
+		}
 		Label label = new()
 		{
 			Text = text,
