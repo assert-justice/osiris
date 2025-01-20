@@ -135,7 +135,6 @@ access = 2
 filters = PackedStringArray("*.json;JSON files")
 
 [node name="NewProject" type="Control" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -156,7 +155,7 @@ offset_left = 1.0
 offset_top = 39.0
 offset_right = 245.0
 offset_bottom = 110.0
-text = "Unnamed Project"
+placeholder_text = "Unnamed Project"
 
 [node name="PathEdit" type="TextEdit" parent="NewProject"]
 layout_mode = 0
@@ -164,9 +163,9 @@ offset_left = 331.0
 offset_top = 41.0
 offset_right = 575.0
 offset_bottom = 112.0
-text = "No Path"
+placeholder_text = "No Path"
 
-[node name="Button" type="Button" parent="NewProject"]
+[node name="Confirm" type="Button" parent="NewProject"]
 layout_mode = 0
 offset_left = 343.0
 offset_top = 243.0
@@ -174,7 +173,7 @@ offset_right = 414.0
 offset_bottom = 274.0
 text = "Confirm"
 
-[node name="Button2" type="Button" parent="NewProject"]
+[node name="Cancel" type="Button" parent="NewProject"]
 layout_mode = 0
 offset_left = 181.0
 offset_top = 237.0
@@ -183,7 +182,7 @@ offset_bottom = 268.0
 text = "Cancel
 "
 
-[node name="Button3" type="Button" parent="NewProject"]
+[node name="SetPath" type="Button" parent="NewProject"]
 layout_mode = 0
 offset_left = 344.0
 offset_top = 137.0
@@ -200,3 +199,7 @@ size = Vector2i(520, 400)
 ok_button_text = "Select Current Folder"
 file_mode = 2
 access = 2
+
+[node name="AcceptDialog" type="AcceptDialog" parent="NewProject"]
+initial_position = 1
+size = Vector2i(570, 100)

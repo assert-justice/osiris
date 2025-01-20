@@ -8,5 +8,8 @@ public partial class GameBrowserMenu: Menu{
         GetNode<Button>("VBox/HBox2/Back").ButtonDown += ()=>{
 			menuSystem.PopMenu();
 		};
+        GetNode<Button>("VBox/HBox/Create").ButtonDown += ()=>{
+			menuSystem.PushMenu("NewProject");
+		};
     }
 }
