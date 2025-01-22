@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text.Json.Nodes;
 using Godot;
 
 public partial class NewProjectMenu : Menu
@@ -23,34 +24,44 @@ public partial class NewProjectMenu : Menu
             // Validate path
             var path = projectPath.Text;
             if(!Directory.Exists(path)){
-                GD.PrintErr("File path does not exist!");
-                acceptDialog.Visible = true;
-                acceptDialog.Title = "File path does not exist!";
+                ShowError("File path does not exist!");
                 return;
             }
             // Validate name
             var name = projectName.Text;
             if(name.Length == 0){
-                GD.PrintErr("Input valid project name!");
-                acceptDialog.Visible = true;
-                acceptDialog.Title = "Input valid project name!";
+                ShowError("Input valid project name!");
                 return;
             }
             path = Path.Join(path, name);
             if(Directory.Exists(path)){
-                GD.PrintErr("Directory already exists!");
-                acceptDialog.Visible = true;
-                acceptDialog.Title = "Directory already exists!";
+                ShowError("Directory already exists!");
                 return;
             }
             // Add to saved games
+            var userPath = ProjectSettings.GlobalizePath("user://");
+            var listPath = Path.Join(userPath, "game_list.json");
+            JsonNode node;
+            if(File.Exists(listPath)){
+                var listFile = File.ReadAllText(listPath);
+                node = JsonNode.Parse(listFile);
+            }
+            else{
+                node = JsonNode.Parse("{}");
+            }
+            GD.Print(node.ToJsonString());
+            File.WriteAllText(listPath, node.ToJsonString());
             // Create project files and directories
             Directory.CreateDirectory(path);
             var fname = Path.Join(path, "manifest.json");
-            // File.Create(Path.Join(path, "manifest.json"));
-            var f = File.Open(fname, FileMode.OpenOrCreate);
-            f.Write("{}".ToAsciiBuffer());
-            f.Close();
+            var newNode = JsonNode.Parse("{}");
+            File.WriteAllText(fname, newNode.ToJsonString());
+            menuSystem.PopMenu();
         };
+    }
+    void ShowError(string message){
+        GD.PrintErr(message);
+        acceptDialog.Visible = true;
+        acceptDialog.Title = message;
     }
 }
