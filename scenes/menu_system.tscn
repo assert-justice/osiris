@@ -64,7 +64,6 @@ layout_mode = 2
 text = "Quit"
 
 [node name="GameBrowser" type="Control" parent="."]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -97,6 +96,11 @@ layout_mode = 2
 text = "Import
 "
 
+[node name="ClearList" type="Button" parent="GameBrowser/VBox/HBox"]
+layout_mode = 2
+text = "[Debug] Clear List
+"
+
 [node name="OptionButton" type="OptionButton" parent="GameBrowser/VBox/HBox"]
 layout_mode = 2
 selected = 0
@@ -127,14 +131,19 @@ text = "Back"
 
 [node name="ImportProjectDialogue" type="FileDialog" parent="GameBrowser"]
 title = "Open a File"
-initial_position = 1
+initial_position = 2
 size = Vector2i(492, 400)
 ok_button_text = "Open"
 file_mode = 0
 access = 2
 filters = PackedStringArray("*.json;JSON files")
 
+[node name="DeleteConfirmation" type="ConfirmationDialog" parent="GameBrowser"]
+title = "Confirm Deletion"
+initial_position = 2
+
 [node name="NewProject" type="Control" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -194,12 +203,12 @@ text = "SetPath
 [node name="CreateProjectDialogue" type="FileDialog" parent="NewProject"]
 auto_translate_mode = 1
 title = "Open a Directory"
-initial_position = 1
+initial_position = 2
 size = Vector2i(520, 400)
 ok_button_text = "Select Current Folder"
 file_mode = 2
 access = 2
 
 [node name="AcceptDialog" type="AcceptDialog" parent="NewProject"]
-initial_position = 1
+initial_position = 2
 size = Vector2i(570, 100)

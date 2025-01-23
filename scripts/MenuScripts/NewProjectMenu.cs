@@ -40,6 +40,7 @@ public partial class NewProjectMenu : Menu
             }
             // Add to saved games
             var userPath = ProjectSettings.GlobalizePath("user://");
+            // GD.Print(userPath);
             var listPath = Path.Join(userPath, "game_list.json");
             JsonNode node;
             if(File.Exists(listPath)){
@@ -48,14 +49,22 @@ public partial class NewProjectMenu : Menu
             }
             else{
                 node = JsonNode.Parse("{}");
+                var obj = node.AsObject();
+                obj.Add("games", JsonNode.Parse("[]"));
             }
+            // var gameObj = JsonNode.Parse($"{{\"name\": \"{name}\", \"path\": \"{path}\"}}").AsObject();
+            var gameObj = JsonNode.Parse("{}").AsObject();
+            gameObj["name"] = name;
+            gameObj["path"] = Path.Join(path, "manifest.json");
+            var gameList = node.AsObject()["games"].AsArray();
+            gameList.Add(gameObj);
             GD.Print(node.ToJsonString());
             File.WriteAllText(listPath, node.ToJsonString());
             // Create project files and directories
-            Directory.CreateDirectory(path);
-            var fname = Path.Join(path, "manifest.json");
-            var newNode = JsonNode.Parse("{}");
-            File.WriteAllText(fname, newNode.ToJsonString());
+            // Directory.CreateDirectory(path);
+            // var fname = Path.Join(path, "manifest.json");
+            // var newNode = JsonNode.Parse("{}");
+            // File.WriteAllText(fname, newNode.ToJsonString());
             menuSystem.PopMenu();
         };
     }
