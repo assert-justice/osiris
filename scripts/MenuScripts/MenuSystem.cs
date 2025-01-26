@@ -9,9 +9,6 @@ public partial class MenuSystem : Control
 	{
 		menuStack.Push(GetChild(0).Name);
 		SetMenu();
-		// GetNode<Button>("Main/HBox/VBox/Join").ButtonDown += ()=>{
-		// 	PushMenu("GameBrowser");
-		// };
 	}
 
 	public override void _Process(double delta)
