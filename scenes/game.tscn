@@ -21,8 +21,11 @@ Width = 21
 Height = 44
 BaseTexture = ExtResource("1_1tss7")
 ShowGrid = false
-ShowWalls = false
 metadata/_edit_lock_ = true
+
+[node name="Mats" type="Node" parent="Grid"]
+
+[node name="Occluders" type="Node" parent="Grid"]
 
 [node name="Tokens" type="Node" parent="Grid"]
 
