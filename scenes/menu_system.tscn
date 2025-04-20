@@ -108,6 +108,7 @@ layout_mode = 2
 selected = 0
 item_count = 3
 popup/item_0/text = "Hosted Games"
+popup/item_0/id = 0
 popup/item_1/text = "Played Games"
 popup/item_1/id = 1
 popup/item_2/text = "All Games"

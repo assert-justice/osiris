@@ -31,29 +31,29 @@ public partial class Grid : Area2D
 	public override void _Ready()
 	{
 		var collider = GetChild<CollisionShape2D>(2);
-        var shape = new RectangleShape2D
-        {
-            Size = new Vector2(CellWidth * Width, CellWidth * Height)
-        };
-        collider.Position = new Vector2(CellWidth * Width/2,CellWidth * Height/2);
+		var shape = new RectangleShape2D
+		{
+			Size = new Vector2(CellWidth * Width, CellWidth * Height)
+		};
+		collider.Position = new Vector2(CellWidth * Width/2,CellWidth * Height/2);
 		collider.Shape = shape;
 		camera = GetChild<Camera>(3);
 		InputEvent += InputMethod;
-        LinePool = new(() =>
-        {
-            var line = new Line2D();
-            GetNode("Lines").AddChild(line);
-            return line;
-        })
-        {
-            InitFn = (Line2D l) =>{
-                l.DefaultColor = Colors.White;
-            },
-            FreeFn = (Line2D l) =>{
-                l.Points = Array.Empty<Vector2>();
-            }
-        };
-        OccluderPool = new(() => {
+		LinePool = new(() =>
+		{
+			var line = new Line2D();
+			GetNode("Lines").AddChild(line);
+			return line;
+		})
+		{
+			InitFn = (Line2D l) =>{
+				l.DefaultColor = Colors.White;
+			},
+			FreeFn = (Line2D l) =>{
+				l.Points = Array.Empty<Vector2>();
+			}
+		};
+		OccluderPool = new(() => {
 			var oc = new LightOccluder2D();
 			GetNode("Occluders").AddChild(oc);
 			return oc;
@@ -81,15 +81,15 @@ public partial class Grid : Area2D
 	void PlaceOccluder(int x0, int y0, int x1, int y1){
 		Vector2[] vectors = {new(x0,y0), new(x1,y1)};
 		var oc = OccluderPool.GetNew();
-        oc.Occluder = new()
-        {
-            Polygon = vectors
-        };
+		oc.Occluder = new()
+		{
+			Polygon = vectors
+		};
 	}
 	void PlaceMat(string texPath, int x, int y, int w, int h){
 		var img = Image.LoadFromFile(texPath);
 		var tex = ImageTexture.CreateFromImage(img);
-        var spr = MatPool.GetNew();
+		var spr = MatPool.GetNew();
 		spr.Texture = tex;
 	}
 	void InputMethod(Node viewport, InputEvent @event, long shapeIdx){
