@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://cahr6flsqr31b"]
 
-[ext_resource type="Script" path="res://scripts/MenuScripts/MenuSystem.cs" id="1_l2bgc"]
-[ext_resource type="Script" path="res://scripts/MenuScripts/NewProjectMenu.cs" id="2_uj1rp"]
-[ext_resource type="Script" path="res://scripts/MenuScripts/MainMenu.cs" id="2_yj3qt"]
-[ext_resource type="Script" path="res://scripts/MenuScripts/GameBrowserMenu.cs" id="3_5ts46"]
-[ext_resource type="Script" path="res://scripts/MenuScripts/EditorMenu.cs" id="5_bwfm2"]
+[ext_resource type="Script" uid="uid://co46b2lypaf8c" path="res://scripts/MenuScripts/MenuSystem.cs" id="1_l2bgc"]
+[ext_resource type="Script" uid="uid://wbfbto332cwr" path="res://scripts/MenuScripts/NewProjectMenu.cs" id="2_uj1rp"]
+[ext_resource type="Script" uid="uid://b0vghk728r0ei" path="res://scripts/MenuScripts/MainMenu.cs" id="2_yj3qt"]
+[ext_resource type="Script" uid="uid://bb2ey8m7n3fh6" path="res://scripts/MenuScripts/GameBrowserMenu.cs" id="3_5ts46"]
+[ext_resource type="Script" uid="uid://bd7lb5yet5jeq" path="res://scripts/MenuScripts/EditorMenu.cs" id="5_bwfm2"]
 
 [node name="MenuSystem" type="Control"]
 layout_mode = 3

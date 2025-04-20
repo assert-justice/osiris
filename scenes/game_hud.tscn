@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dnk4q5yrhlc6d"]
 
-[ext_resource type="Script" path="res://scripts/Chat.cs" id="1_tch8g"]
+[ext_resource type="Script" uid="uid://56m6v2gxlegn" path="res://scripts/Chat.cs" id="1_tch8g"]
 
 [node name="GameHud" type="Control"]
 layout_mode = 3

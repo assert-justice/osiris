@@ -1,10 +1,10 @@
 [gd_scene load_steps=7 format=3 uid="uid://blt372838xe"]
 
 [ext_resource type="Texture2D" uid="uid://d05lbgaho6uy0" path="res://textures/temple_21_44.jpg" id="1_1tss7"]
-[ext_resource type="Script" path="res://scripts/Grid.cs" id="2_1c0kf"]
+[ext_resource type="Script" uid="uid://d1jp8cw6vjg55" path="res://scripts/Grid.cs" id="2_1c0kf"]
 [ext_resource type="PackedScene" uid="uid://b0uu343mpkg7t" path="res://scenes/token.tscn" id="3_3aypw"]
 [ext_resource type="Texture2D" uid="uid://2c4kqpo0ajy" path="res://icon.svg" id="4_lylv7"]
-[ext_resource type="Script" path="res://scripts/Camera.cs" id="5_2e1j1"]
+[ext_resource type="Script" uid="uid://sb0jh08yckba" path="res://scripts/Camera.cs" id="5_2e1j1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jxm6t"]
 
