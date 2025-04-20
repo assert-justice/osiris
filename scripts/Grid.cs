@@ -14,8 +14,10 @@ public partial class Grid : Area2D
 	[Export] public bool ShowGrid = true;
 	[Export] public bool ShowWalls = true;
 	List<(Vector2I, Vector2I)> Walls = new();
-	Dictionary<Vector2I, List<int>> WallCache = new();
-	Pool<Line2D> LinePool = new(()=>new Line2D());
+	// Dictionary<Vector2I, List<int>> WallCache = new();
+	Pool<Line2D> LinePool;
+	Pool<LightOccluder2D> OccluderPool;
+	Pool<Sprite2D> MatPool;
 	Dictionary<Vector2I, GridNode> PathLookup = new();
 	Camera camera;
 	bool IsDragging = false;
@@ -29,53 +31,66 @@ public partial class Grid : Area2D
 	public override void _Ready()
 	{
 		var collider = GetChild<CollisionShape2D>(2);
-		var shape = new RectangleShape2D();
-		shape.Size = new Vector2(CellWidth * Width,CellWidth * Height);
-		collider.Position = new Vector2(CellWidth * Width/2,CellWidth * Height/2);
+        var shape = new RectangleShape2D
+        {
+            Size = new Vector2(CellWidth * Width, CellWidth * Height)
+        };
+        collider.Position = new Vector2(CellWidth * Width/2,CellWidth * Height/2);
 		collider.Shape = shape;
 		camera = GetChild<Camera>(3);
 		InputEvent += InputMethod;
-		LinePool.NewFn = ()=>{
-			var line = new Line2D();
-			GetChild(1).AddChild(line);
-			return line;
-		};
-		LinePool.InitFn = (Line2D l)=>{
-			l.DefaultColor = Colors.White;
-		};
-		LinePool.FreeFn = (Line2D l)=>{
-			l.Points = Array.Empty<Vector2>();
-		};
-		foreach (var t in GetChild(0).GetChildren())
-		{
-			if (t is Token token){
-				token.SetGrid(this);
+        LinePool = new(() =>
+        {
+            var line = new Line2D();
+            GetNode("Lines").AddChild(line);
+            return line;
+        })
+        {
+            InitFn = (Line2D l) =>{
+                l.DefaultColor = Colors.White;
+            },
+            FreeFn = (Line2D l) =>{
+                l.Points = Array.Empty<Vector2>();
+            }
+        };
+        OccluderPool = new(() => {
+			var oc = new LightOccluder2D();
+			GetNode("Occluders").AddChild(oc);
+			return oc;
+		}){
+			InitFn = (LightOccluder2D oc)=>{
+				oc.Visible = true;
+			},
+			FreeFn = (LightOccluder2D oc)=>{
+				oc.Visible = false;
 			}
-		}
-		AddWall(9, 1, 9, 7);
-		AddWall(9, 7, 11, 7);
-		AddWall(9, 1, 14, 1);
-		AddWall(14, 1, 14, 7);
-		AddWall(14, 7, 12, 7);
-		AddWall(12, 7, 12, 8);
-		AddWall(11, 7, 11, 8);
-		AddWall(11, 8, 8, 8);
-		AddWall(8, 8, 8, 17);
-		AddWall(12, 8, 15, 8);
-		AddWall(15, 8, 15, 17);
-		AddWall(15, 17, 8, 17);
-		foreach ((var v0, var v1) in Walls)
-		{
-			var x0 = v0.X * CellWidth;
-			var y0 = v0.Y * CellWidth;
-			var x1 = v1.X * CellWidth;
-			var y1 = v1.Y * CellWidth;
-			Vector2[] vectors = {new Vector2(x0,y0), new Vector2(x1,y1)};
-			var occluder = new LightOccluder2D();
-			occluder.Occluder = new();
-			occluder.Occluder.Polygon = vectors;
-			AddChild(occluder);
-		}
+		};
+		MatPool = new(()=>{
+			var spr = new Sprite2D();
+			GetNode("Mats").AddChild(spr);
+			return spr;
+		}){
+			InitFn = (Sprite2D spr)=>{
+				spr.Visible = true;
+			},
+			FreeFn = (Sprite2D spr)=>{
+				spr.Visible = false;
+			},
+		};
+	}
+	void PlaceOccluder(int x0, int y0, int x1, int y1){
+		Vector2[] vectors = {new(x0,y0), new(x1,y1)};
+		var oc = OccluderPool.GetNew();
+        oc.Occluder = new()
+        {
+            Polygon = vectors
+        };
+	}
+	void PlaceMat(string texPath, int x, int y, int w, int h){
+		var img = Image.LoadFromFile(texPath);
+		var tex = ImageTexture.CreateFromImage(img);
+        var spr = MatPool.GetNew();
+		spr.Texture = tex;
 	}
 	void InputMethod(Node viewport, InputEvent @event, long shapeIdx){
 		if(@event is InputEventMouseMotion mouseMotion){
