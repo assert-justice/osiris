@@ -1,9 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://blt372838xe"]
+[gd_scene load_steps=6 format=3 uid="uid://blt372838xe"]
 
 [ext_resource type="Texture2D" uid="uid://d05lbgaho6uy0" path="res://textures/temple_21_44.jpg" id="1_1tss7"]
-[ext_resource type="Script" uid="uid://d1jp8cw6vjg55" path="res://scripts/Grid.cs" id="2_1c0kf"]
-[ext_resource type="PackedScene" uid="uid://b0uu343mpkg7t" path="res://scenes/token.tscn" id="3_3aypw"]
-[ext_resource type="Texture2D" uid="uid://2c4kqpo0ajy" path="res://icon.svg" id="4_lylv7"]
+[ext_resource type="Script" uid="uid://d1jp8cw6vjg55" path="res://scripts/GridScripts/Grid.cs" id="2_1c0kf"]
+[ext_resource type="PackedScene" uid="uid://c17fwnf2j2u5h" path="res://scenes/mat.tscn" id="3_lbhrr"]
 [ext_resource type="Script" uid="uid://sb0jh08yckba" path="res://scripts/Camera.cs" id="5_2e1j1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jxm6t"]
@@ -17,8 +16,8 @@ texture = ExtResource("1_1tss7")
 
 [node name="Grid" type="Area2D" parent="."]
 script = ExtResource("2_1c0kf")
-Width = 21
-Height = 44
+MatScene = ExtResource("3_lbhrr")
+MatTexture = ExtResource("1_1tss7")
 BaseTexture = ExtResource("1_1tss7")
 ShowGrid = false
 metadata/_edit_lock_ = true
@@ -28,12 +27,6 @@ metadata/_edit_lock_ = true
 [node name="Occluders" type="Node" parent="Grid"]
 
 [node name="Tokens" type="Node" parent="Grid"]
-
-[node name="Token" parent="Grid/Tokens" instance=ExtResource("3_3aypw")]
-position = Vector2(757, 326)
-Texture = ExtResource("4_lylv7")
-Speed = 15
-metadata/_edit_lock_ = true
 
 [node name="Lines" type="Node" parent="Grid"]
 
@@ -45,5 +38,6 @@ position = Vector2(959, 548)
 script = ExtResource("5_2e1j1")
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
+visible = false
 color = Color(0, 0, 0, 1)
 metadata/_edit_lock_ = true

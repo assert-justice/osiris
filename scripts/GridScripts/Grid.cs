@@ -5,39 +5,51 @@ using System.Linq;
 
 public partial class Grid : Area2D
 {
-	[Export] public int Width = 25;
-	[Export] public int Height = 25;
-	[Export] public int CellWidth = 70;
-	[Export] public Color GridColor = Colors.White;
-	[Export] public Texture2D BaseTexture;
-	[Export] public bool BaseTextureTiles = false;
-	[Export] public bool ShowGrid = true;
-	[Export] public bool ShowWalls = true;
+	[Export] PackedScene MatScene;
+	[Export] Texture MatTexture;
+	[Export] int Width = 21;
+	[Export] int Height = 44;
+	[Export] int CellWidth = 70;
+	[Export] Color GridColor = Colors.White;
+	[Export] Texture2D BaseTexture;
+	[Export] bool BaseTextureTiles = false;
+	[Export] bool ShowGrid = true;
+	[Export] bool ShowWalls = true;
 	List<(Vector2I, Vector2I)> Walls = new();
 	// Dictionary<Vector2I, List<int>> WallCache = new();
 	Pool<Line2D> LinePool;
 	Pool<LightOccluder2D> OccluderPool;
-	Pool<Sprite2D> MatPool;
-	Dictionary<Vector2I, GridNode> PathLookup = new();
+	Dictionary<Vector2I, GridNode> PathLookup = [];
 	Camera camera;
 	bool IsDragging = false;
-	// Called when the node enters the scene tree for the first time.
 	public Line2D GetLine(){
 		return LinePool.GetNew();
 	}
 	public void FreeLine(Line2D line){
 		LinePool.Free(line);
 	}
+	public void Cleanup(){
+		foreach (var item in GetNode("Mats").GetChildren())
+		{
+			item.QueueFree();
+		}
+		foreach (var item in GetNode("Tokens").GetChildren())
+		{
+			item.QueueFree();
+		}
+		OccluderPool.FreeAll();
+		LinePool.FreeAll();
+	}
 	public override void _Ready()
 	{
-		var collider = GetChild<CollisionShape2D>(2);
+		var collider = GetNode<CollisionShape2D>("CollisionShape2D");
 		var shape = new RectangleShape2D
 		{
 			Size = new Vector2(CellWidth * Width, CellWidth * Height)
 		};
 		collider.Position = new Vector2(CellWidth * Width/2,CellWidth * Height/2);
 		collider.Shape = shape;
-		camera = GetChild<Camera>(3);
+		camera = GetNode<Camera>("Camera2D");
 		InputEvent += InputMethod;
 		LinePool = new(() =>
 		{
@@ -50,7 +62,7 @@ public partial class Grid : Area2D
 				l.DefaultColor = Colors.White;
 			},
 			FreeFn = (Line2D l) =>{
-				l.Points = Array.Empty<Vector2>();
+				l.Points = [];
 			}
 		};
 		OccluderPool = new(() => {
@@ -65,18 +77,12 @@ public partial class Grid : Area2D
 				oc.Visible = false;
 			}
 		};
-		MatPool = new(()=>{
-			var spr = new Sprite2D();
-			GetNode("Mats").AddChild(spr);
-			return spr;
-		}){
-			InitFn = (Sprite2D spr)=>{
-				spr.Visible = true;
-			},
-			FreeFn = (Sprite2D spr)=>{
-				spr.Visible = false;
-			},
-		};
+		Example();
+	}
+	void Example(){
+		var mat = MatScene.Instantiate<Mat>();
+		GetNode("Mats").AddChild(mat);
+		mat.SetStats(CellWidth, Width, Height, (Texture2D)MatTexture);
 	}
 	void PlaceOccluder(int x0, int y0, int x1, int y1){
 		Vector2[] vectors = {new(x0,y0), new(x1,y1)};
@@ -86,10 +92,10 @@ public partial class Grid : Area2D
 			Polygon = vectors
 		};
 	}
-	void PlaceMat(string texPath, int x, int y, int w, int h){
-		var img = Image.LoadFromFile(texPath);
+	void PlaceMat(Image img, int x, int y, int w, int h){
 		var tex = ImageTexture.CreateFromImage(img);
-		var spr = MatPool.GetNew();
+		var spr = new Sprite2D();
+		GetNode("Mats").AddChild(spr);
 		spr.Texture = tex;
 	}
 	void InputMethod(Node viewport, InputEvent @event, long shapeIdx){
@@ -98,27 +104,13 @@ public partial class Grid : Area2D
 				camera.Pan(-mouseMotion.Relative);
 			}
 		}
-		if(@event is InputEventMouseButton mousButt){
-			// GD.Print("yo");
-			if(mousButt.ButtonIndex != MouseButton.Right) return;
-			if (mousButt.Pressed && !IsDragging){
+		if(@event is InputEventMouseButton mouseButt){
+			if(mouseButt.ButtonIndex != MouseButton.Right) return;
+			if (mouseButt.Pressed && !IsDragging){
 				IsDragging = true;
-			// 	line = grid.GetLine();
-			// 	var x = (int)Position.X / CellWidth;
-			// 	var y = (int)Position.Y / CellWidth;
-			// 	DragStart = new(x,y);
-			// 	grid.GenPaths(DragStart, 5);
 			}
-			if (!mousButt.Pressed && IsDragging){
+			if (!mouseButt.Pressed && IsDragging){
 				IsDragging = false;
-			// 	grid.FreeLine(line);
-			// 	line = null;
-			// 	// Snap to grid
-			// 	var x = (int)Position.X / CellWidth;
-			// 	var y = (int)Position.Y / CellWidth;
-			// 	x = x * CellWidth + CellWidth/2;
-			// 	y = y * CellWidth + CellWidth/2;
-			// 	Position = new Vector2(x,y);
 			}
 		}
 	}
@@ -146,35 +138,34 @@ public partial class Grid : Area2D
 		return (r >= 0 && r <= 1) && (s >= 0 && s <= 1);
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
 	}
 
-	public override void _Draw()
-	{
-		var width = Width * CellWidth;
-		var height = Height * CellWidth;
-		DrawTextureRect(BaseTexture, new Rect2(0, 0, width, height), BaseTextureTiles);
-		if(ShowGrid){
-			for (int y = 0; y < Height + 1; y++){
-				DrawLine(new Vector2(0, y * CellWidth), new Vector2(width, y * CellWidth), GridColor);
-			}
-			for (int x = 0; x < Width + 1; x++){
-				DrawLine(new Vector2(x * CellWidth,0), new Vector2(x * CellWidth,height), GridColor);
-			}
-		}
-		if(ShowWalls){
-			foreach ((var v0, var v1) in Walls)
-			{
-				var x0 = v0.X * CellWidth;
-				var y0 = v0.Y * CellWidth;
-				var x1 = v1.X * CellWidth;
-				var y1 = v1.Y * CellWidth;
-				DrawLine(new Vector2(x0,y0), new Vector2(x1,y1), Colors.Red);
-			}
-		}
-	}
+	// public override void _Draw()
+	// {
+	// 	var width = Width * CellWidth;
+	// 	var height = Height * CellWidth;
+	// 	DrawTextureRect(BaseTexture, new Rect2(0, 0, width, height), BaseTextureTiles);
+	// 	if(ShowGrid){
+	// 		for (int y = 0; y < Height + 1; y++){
+	// 			DrawLine(new Vector2(0, y * CellWidth), new Vector2(width, y * CellWidth), GridColor);
+	// 		}
+	// 		for (int x = 0; x < Width + 1; x++){
+	// 			DrawLine(new Vector2(x * CellWidth,0), new Vector2(x * CellWidth,height), GridColor);
+	// 		}
+	// 	}
+	// 	if(ShowWalls){
+	// 		foreach ((var v0, var v1) in Walls)
+	// 		{
+	// 			var x0 = v0.X * CellWidth;
+	// 			var y0 = v0.Y * CellWidth;
+	// 			var x1 = v1.X * CellWidth;
+	// 			var y1 = v1.Y * CellWidth;
+	// 			DrawLine(new Vector2(x0,y0), new Vector2(x1,y1), Colors.Red);
+	// 		}
+	// 	}
+	// }
 	static GridNode PopLeast(ref Dictionary<Vector2I, GridNode> dict){
 		var least = new GridNode(new Vector2I(0,0), new Vector2I(0,0), Mathf.Inf);
 		if (dict.Count == 0){

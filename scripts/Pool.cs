@@ -32,6 +32,13 @@ public class Pool<T>{
         Alive.Remove(t);
         Dead.Add(t);
     }
+    public void FreeAll(){
+        var alive = Alive.ToArray();
+        foreach (var item in alive)
+        {
+            Free(item);
+        }
+    }
     public Pool(Func<T> NewFn){
         this.NewFn = NewFn;
         InitFn = (T t) => {};
